@@ -1,0 +1,41 @@
+name: CI/CD Pipeline - Windows - CMake & Qt5
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      QT_VERSION: '5.15.2'  # Adjust as needed
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Qt5 environment
+        shell: powershell
+        run: |
+          choco install qt5 --version=$env:QT_VERSION -y
+          $env:QT5_DIR = 'C:\tools\Qt5\5.15.2\msvc2019_64'
+          echo "QT5_DIR=$env:QT5_DIR" >> $env:GITHUB_ENV
+
+      - name: Configure CMake
+        shell: cmd
+        run: cmake -S . -B build -DCMAKE_PREFIX_PATH=%QT5_DIR%\lib\cmake
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build --config Release
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: build

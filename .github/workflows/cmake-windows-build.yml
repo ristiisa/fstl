@@ -15,20 +15,30 @@ jobs:
 
     env:
       QT_VER: '5.15.2'
-      QT_VER_MSVC: 'msvc2019_64'
+      QT_VER_MSVC: 'win64_msvc2019_64'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Qt5 environment
-        shell: pwsh
-        run: |
-          echo "QTDIR=C:\Qt\${{ env.QT_VER }}\${{ env.QT_VER_MSVC }}_64" >> ${{ github.env }}
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '${{ env.QT_VER }}'
+          host: 'windows'
+          target: 'desktop'
+          arch: '${{ env.QT_VER_MSVC }}'
+          dir: '${{github.workspace}}/qt/'
+          install-deps: 'true'
+
+      - name: Set Qt path and refresh
+        run: | 
+          echo "${{github.workspace}}/qt/Qt/${{ env.QT_VER }}/${{ env.QT_VER_MSVC }}/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          refreshenv
 
       - name: Configure CMake
         shell: cmd
-        run: cmake -S . -B build -G "Ninja" -DQt5_DIR=%QTDIR%
+        run: cmake -S . -B build -G "Ninja"
 
       - name: Build
         shell: cmd

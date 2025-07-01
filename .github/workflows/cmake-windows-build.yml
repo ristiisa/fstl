@@ -13,20 +13,22 @@ jobs:
   build:
     runs-on: windows-latest
 
+    env:
+      QT_VER: '5.15.2'
+      QT_VER_MSVC: 'msvc2019_64'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Qt5 environment
-        shell: powershell
+        shell: pwsh
         run: |
-          choco install -y qt5-default cmake
-          $env:QT5_DIR = 'C:\tools\Qt5\5.15.2\msvc2019_64'
-          echo "QT5_DIR=$env:QT5_DIR" >> $env:GITHUB_ENV
+          echo "QTDIR=C:\Qt\${{ env.QT_VER }}\${{ env.QT_VER_MSVC }}_64" >> ${{ github.env }}
 
       - name: Configure CMake
         shell: cmd
-        run: cmake -S . -B build -G "Ninja" -DQt5_DIR=%QT5_DIR%
+        run: cmake -S . -B build -G "Ninja" -DQt5_DIR=%QTDIR%
 
       - name: Build
         shell: cmd

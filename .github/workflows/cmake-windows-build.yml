@@ -30,7 +30,7 @@ jobs:
 
       - name: Build
         shell: cmd
-        run: cmake --build build --config Release
+        run: cmake --build build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.1.0

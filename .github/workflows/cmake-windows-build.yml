@@ -1,0 +1,46 @@
+name: CI/CD Pipeline - Windows - CMake & Qt5
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      QT_VER: '5.15.2'
+      QT_VER_MSVC: 'win64_msvc2019_64'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '${{ env.QT_VER }}'
+          host: 'windows'
+          target: 'desktop'
+          arch: '${{ env.QT_VER_MSVC }}'
+          dir: '${{github.workspace}}/qt/'
+          install-deps: 'true'
+
+      - name: Configure CMake
+        shell: cmd
+        run: cmake -S . -B build -G "Visual Studio 17 2022"
+
+      - name: Build
+        shell: cmd
+        run: cmake --build build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4.1.0
+        with:
+          name: build-artifact
+          path: build

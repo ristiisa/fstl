@@ -39,7 +39,7 @@ jobs:
         shell: cmd
         run: |
           set PATH=%PATH%;${{ github.workspace }}\qt\${{ env.QT_VER }}\msvc2019_64\bin
-          windeployqt build\Release\<your_exe_name>.exe
+          windeployqt build\Release\fstl.exe
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4.1.0

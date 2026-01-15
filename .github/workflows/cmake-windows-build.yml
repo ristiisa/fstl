@@ -15,7 +15,7 @@ jobs:
 
     env:
       QT_VER: '5.15.2'
-      QT_VER_MSVC: 'win64_msvc2022_64'
+      QT_VER_MSVC: 'win64_msvc2019_64'
 
     steps:
       - name: Checkout repository
